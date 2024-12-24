@@ -10,122 +10,317 @@
 
   gtag('config', 'G-FQKQL5Y7ME');
 </script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code Generator</title>
-  <script src="qrcode.min.js"></script>
-  <style>
-    /* (Twój wcześniejszy styl CSS pozostaje bez zmian) */
-  </style>
+  <meta name="google-adsense-account" content="ca-pub-3994966114672852">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="qrcode.min.js"></script>
+    <style>
+        :root[data-theme="light"] {
+            --bg-color: #f5f5f5;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --shadow-color: rgba(0,0,0,0.1);
+            --button-bg: #4CAF50;
+            --button-hover: #45a049;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #ffffff;
+            --border-color: #404040;
+            --shadow-color: rgba(0,0,0,0.3);
+            --button-bg: #45a049;
+            --button-hover: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            background-color: var(--bg-color);
+            transition: background-color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--container-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .theme-switch {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .theme-switch-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            transition: background-color 0.3s;
+        }
+
+        .theme-switch-button:hover {
+            background-color: var(--border-color);
+        }
+
+        .theme-switch-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .copy-button {
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            display: none;
+        }
+
+        .copy-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .copy-button.visible {
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            transition: border-color 0.3s;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--button-bg);
+        }
+
+        input::placeholder {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+    </style>   
+
 </head>
 <body>
-  <div class="container">
-    <div class="theme-switch">
-      <button class="theme-switch-button" id="theme-toggle" title="Toggle dark mode">
-        <svg class="theme-switch-icon" id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="23"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-          <line x1="1" y1="12" x2="3" y2="12"/>
-          <line x1="21" y1="12" x2="23" y2="12"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-        </svg>
-      </button>
+    <div class="container">
+        <div class="theme-switch">
+            <button class="theme-switch-button" id="theme-toggle" title="Toggle dark mode">
+                <svg class="theme-switch-icon" id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+            </button>
+        </div>
+        <h1>QR Code Generator</h1>
+        <div class="input-group">
+            <input 
+                type="text" 
+                id="text-input" 
+                placeholder="Enter text to generate QR..."
+                autofocus
+            >
+        </div>
+        <div id="qrcode"></div>
+        <div class="button-group">
+            <button id="copy-button" class="copy-button">
+                Copy to Clipboard
+            </button>
+        </div>
     </div>
-    <h1>QR Code Generator</h1>
-    <div class="input-group">
-      <input 
-        type="text" 
-        id="text-input" 
-        placeholder="Enter text to generate QR..."
-        maxlength="500"
-        autofocus
-      >
-    </div>
-    <div id="qrcode"></div>
-    <div class="button-group">
-      <button id="copy-button" class="copy-button">Copy to Clipboard</button>
-      <button id="download-button" class="copy-button">Download QR Code</button>
-    </div>
-  </div>
 
-  <script>
-    const textInput = document.getElementById('text-input');
-    const qrcodeContainer = document.getElementById('qrcode');
-    const copyButton = document.getElementById('copy-button');
-    const downloadButton = document.getElementById('download-button');
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    let qr = null;
+    <script>
+        const textInput = document.getElementById('text-input');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const copyButton = document.getElementById('copy-button');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        let qr = null;
 
-    // Theme switching (bez zmian)
-    function setTheme(isDark) { /*...*/ }
-    function updateThemeIcon(isDark) { /*...*/ }
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('dark-mode');
-    const isDark = savedTheme !== null ? savedTheme === 'true' : prefersDark;
-    setTheme(isDark);
-    themeToggle.addEventListener('click', () => { /*...*/ });
+        // Theme switching
+        function setTheme(isDark) {
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('dark-mode', isDark);
+            updateThemeIcon(isDark);
+        }
 
-    // Generate QR Code
-    function generateQRCode(text) {
-      qrcodeContainer.innerHTML = '';
-      if (text.trim() !== '') {
-        qr = new QRCode(qrcodeContainer, {
-          text: text,
-          width: 256,
-          height: 256,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
+        function updateThemeIcon(isDark) {
+            if (isDark) {
+                themeIcon.innerHTML = `
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                `;
+            } else {
+                themeIcon.innerHTML = `
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                `;
+            }
+        }
+
+        // Initialize theme
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('dark-mode');
+        const isDark = savedTheme !== null ? savedTheme === 'true' : prefersDark;
+        setTheme(isDark);
+
+        // Theme toggle handler
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'light');
         });
-      }
-    }
 
-    // Copy QR Code to Clipboard
-    async function copyQRToClipboard() { /* (bez zmian) */ }
-    copyButton.addEventListener('click', copyQRToClipboard);
+        function generateQRCode(text) {
+            // Clear previous QR code
+            qrcodeContainer.innerHTML = '';
+            
+            if (text.trim() !== '') {
+                // Create new QR code
+                qr = new QRCode(qrcodeContainer, {
+                    text: text,
+                    width: 256,
+                    height: 256,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
+        }
 
-    // Download QR Code
-    function downloadQR() {
-      const qrImage = qrcodeContainer.querySelector('img');
-      if (qrImage) {
-        const link = document.createElement('a');
-        link.href = qrImage.src;
-        link.download = 'qr-code.png';
-        link.click();
-      }
-    }
-    downloadButton.addEventListener('click', downloadQR);
+        // Copy QR code to clipboard function
+        async function copyQRToClipboard() {
+            try {
+                const qrImage = qrcodeContainer.querySelector('img');
+                if (qrImage) {
+                    // Create canvas and copy image to it
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = qrImage.width;
+                    canvas.height = qrImage.height;
+                    ctx.drawImage(qrImage, 0, 0);
+                    
+                    // Convert canvas to blob
+                    const blob = await new Promise(resolve => 
+                        canvas.toBlob(resolve, 'image/png')
+                    );
+                    
+                    // Copy to clipboard
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'image/png': blob
+                        })
+                    ]);
+                    
+                    // Success message
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy to Clipboard';
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Copy error:', err);
+                copyButton.textContent = 'Copy failed';
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy to Clipboard';
+                }, 2000);
+            }
+        }
 
-    // Update button visibility
-    function updateCopyButtonVisibility(text) {
-      copyButton.classList.toggle('visible', text.trim() !== '');
-      downloadButton.classList.toggle('visible', text.trim() !== '');
-    }
+        // Handle copy button
+        copyButton.addEventListener('click', copyQRToClipboard);
 
-    // Handle text input changes
-    textInput.addEventListener('input', (e) => {
-      const text = e.target.value;
-      generateQRCode(text);
-      updateCopyButtonVisibility(text);
+        // Show/hide copy button
+        function updateCopyButtonVisibility(text) {
+            copyButton.classList.toggle('visible', text.trim() !== '');
+        }
 
-      // Track event in Google Analytics
-      gtag('event', 'generate_qr', {
-        event_category: 'QR Code Generator',
-        event_label: 'Text input updated',
-        value: text.length
-      });
-    });
+        // Listen for input changes
+        textInput.addEventListener('input', (e) => {
+            const text = e.target.value;
+            generateQRCode(text);
+            updateCopyButtonVisibility(text);
+        });
 
-    // Generate initial QR code if input is not empty
-    if (textInput.value) {
-      generateQRCode(textInput.value);
-      updateCopyButtonVisibility(textInput.value);
-    }
-  </script>
+        // Generate initial QR code if input is not empty
+        if (textInput.value) {
+            generateQRCode(textInput.value);
+            updateCopyButtonVisibility(textInput.value);
+        }
+    </script>
 </body>
 </html>
