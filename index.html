@@ -14,7 +14,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
-    <script src="qrcode.min.js"></script>
+    <!-- QR Code library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         :root[data-theme="light"] {
             --bg-color: #f5f5f5;
@@ -24,6 +25,7 @@
             --shadow-color: rgba(0,0,0,0.1);
             --button-bg: #4CAF50;
             --button-hover: #45a049;
+            --error-color: #ff4444;
         }
 
         :root[data-theme="dark"] {
@@ -34,6 +36,7 @@
             --shadow-color: rgba(0,0,0,0.3);
             --button-bg: #45a049;
             --button-hover: #4CAF50;
+            --error-color: #ff6b6b;
         }
 
         * {
@@ -43,25 +46,14 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             padding: 2rem;
             background-color: var(--bg-color);
-            transition: background-color 0.3s;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--container-bg);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            transition: background-color 0.3s, box-shadow 0.3s;
-            position: relative;
+            transition: background-color 0.3s ease;
         }
 
         .theme-switch {
@@ -96,6 +88,17 @@
             height: 24px;
         }
 
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            background: var(--container-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
         h1 {
             text-align: center;
             margin-bottom: 2rem;
@@ -106,13 +109,34 @@
             margin-bottom: 2rem;
         }
 
-        .button-group {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
+        .text-input {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            background-color: var(--container-bg);
+            color: var(--text-color);
         }
 
-        .copy-button {
+        .text-input:focus {
+            outline: none;
+            border-color: var(--button-bg);
+        }
+
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            min-height: 258px;
+            align-items: center;
+        }
+
+        .button {
             background-color: var(--button-bg);
             color: white;
             border: none;
@@ -120,55 +144,40 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
             display: none;
         }
 
-        .copy-button:hover {
+        .button:hover {
             background-color: var(--button-hover);
         }
 
-        .copy-button.visible {
+        .button.visible {
             display: block;
         }
 
-        input {
-            width: 100%;
-            padding: 0.8rem;
-            font-size: 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 5px;
-            transition: border-color 0.3s;
-            background-color: var(--container-bg);
-            color: var(--text-color);
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        input:focus {
-            outline: none;
-            border-color: var(--button-bg);
-        }
-
-        input::placeholder {
-            color: var(--text-color);
-            opacity: 0.7;
-        }
-
-        #qrcode {
+        .button-group {
             display: flex;
             justify-content: center;
-            margin-top: 1rem;
-            background-color: white;
-            padding: 1rem;
-            border-radius: 5px;
+            gap: 1rem;
         }
-    </style>   
-
+    </style>
 </head>
 <body>
     <div class="container">
         <div class="theme-switch">
-            <button class="theme-switch-button" id="theme-toggle" title="Toggle dark mode">
-                <svg class="theme-switch-icon" id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button 
+                class="theme-switch-button" 
+                id="theme-toggle" 
+                aria-label="Toggle dark mode"
+                role="switch"
+                aria-checked="false">
+                <svg class="theme-switch-icon" id="theme-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="5"/>
                     <line x1="12" y1="1" x2="12" y2="3"/>
                     <line x1="12" y1="21" x2="12" y2="23"/>
@@ -182,34 +191,44 @@
             </button>
         </div>
         <h1>QR Code Generator</h1>
+        
         <div class="input-group">
             <input 
                 type="text" 
                 id="text-input" 
-                placeholder="Enter text to generate QR..."
+                class="text-input"
+                placeholder="Enter text or URL..."
                 autofocus
             >
         </div>
-        <div id="qrcode"></div>
+
+        <div id="qr-container" class="qr-container"></div>
+
         <div class="button-group">
-            <button id="copy-button" class="copy-button">
+            <button id="copy-button" class="button">
                 Copy to Clipboard
+            </button>
+            <button id="download-button" class="button">
+                Download PNG
             </button>
         </div>
     </div>
 
     <script>
         const textInput = document.getElementById('text-input');
-        const qrcodeContainer = document.getElementById('qrcode');
+        const qrContainer = document.getElementById('qr-container');
         const copyButton = document.getElementById('copy-button');
+        const downloadButton = document.getElementById('download-button');
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
+        
         let qr = null;
 
-        // Theme switching
+        // Theme Management
         function setTheme(isDark) {
             document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
             localStorage.setItem('dark-mode', isDark);
+            themeToggle.setAttribute('aria-checked', isDark);
             updateThemeIcon(isDark);
         }
 
@@ -233,11 +252,117 @@
             }
         }
 
-        // Initialize theme
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const savedTheme = localStorage.getItem('dark-mode');
-        const isDark = savedTheme !== null ? savedTheme === 'true' : prefersDark;
-        setTheme(isDark);
+        // Funkcja generująca kod QR
+        function generateQRCode(text) {
+            // Wyczyść poprzedni kod QR
+            if (qr) {
+                qr.clear();
+            }
+            qrContainer.innerHTML = '';
+            
+            if (text.trim() !== '') {
+                try {
+                    qr = new QRCode(qrContainer, {
+                        text: text,
+                        width: 256,
+                        height: 256,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+
+                    // Show buttons
+                    copyButton.classList.add('visible');
+                    downloadButton.classList.add('visible');
+                } catch (error) {
+                    console.error('QR generation error:', error);
+                    qrContainer.textContent = 'Error generating QR code.';
+                }
+            } else {
+                // Ukryj przyciski jeśli nie ma tekstu
+                copyButton.classList.remove('visible');
+                downloadButton.classList.remove('visible');
+            }
+        }
+
+        // Funkcja kopiowania do schowka
+        async function copyQRToClipboard() {
+            try {
+                const qrImage = qrContainer.querySelector('img');
+                if (!qrImage) return;
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = qrImage.width;
+                canvas.height = qrImage.height;
+                ctx.drawImage(qrImage, 0, 0);
+                
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': blob })
+                ]);
+                
+                copyButton.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyButton.textContent = 'Copy to Clipboard';
+                }, 2000);
+            } catch (error) {
+                console.error('Błąd kopiowania:', error);
+                copyButton.textContent = 'Błąd kopiowania';
+                setTimeout(() => {
+                    copyButton.textContent = 'Kopiuj do schowka';
+                }, 2000);
+            }
+        }
+
+        // Funkcja pobierania PNG
+        async function downloadQRCode() {
+            try {
+                const qrImage = qrContainer.querySelector('img');
+                if (!qrImage) return;
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = qrImage.width;
+                canvas.height = qrImage.height;
+                ctx.drawImage(qrImage, 0, 0);
+                
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'qr-code.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                downloadButton.textContent = 'Downloaded!';
+                setTimeout(() => {
+                    downloadButton.textContent = 'Download PNG';
+                }, 2000);
+            } catch (error) {
+                console.error('Błąd pobierania:', error);
+                downloadButton.textContent = 'Błąd pobierania';
+                setTimeout(() => {
+                    downloadButton.textContent = 'Pobierz PNG';
+                }, 2000);
+            }
+        }
+
+        // Nasłuchiwanie zdarzeń
+        textInput.addEventListener('input', (e) => {
+            generateQRCode(e.target.value);
+        });
+
+        copyButton.addEventListener('click', copyQRToClipboard);
+        downloadButton.addEventListener('click', downloadQRCode);
+
+        // Generuj kod QR jeśli input ma początkową wartość
+        if (textInput.value) {
+            generateQRCode(textInput.value);
+        }
 
         // Theme toggle handler
         themeToggle.addEventListener('click', () => {
@@ -245,82 +370,11 @@
             setTheme(currentTheme === 'light');
         });
 
-        function generateQRCode(text) {
-            // Clear previous QR code
-            qrcodeContainer.innerHTML = '';
-            
-            if (text.trim() !== '') {
-                // Create new QR code
-                qr = new QRCode(qrcodeContainer, {
-                    text: text,
-                    width: 256,
-                    height: 256,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            }
-        }
-
-        // Copy QR code to clipboard function
-        async function copyQRToClipboard() {
-            try {
-                const qrImage = qrcodeContainer.querySelector('img');
-                if (qrImage) {
-                    // Create canvas and copy image to it
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = qrImage.width;
-                    canvas.height = qrImage.height;
-                    ctx.drawImage(qrImage, 0, 0);
-                    
-                    // Convert canvas to blob
-                    const blob = await new Promise(resolve => 
-                        canvas.toBlob(resolve, 'image/png')
-                    );
-                    
-                    // Copy to clipboard
-                    await navigator.clipboard.write([
-                        new ClipboardItem({
-                            'image/png': blob
-                        })
-                    ]);
-                    
-                    // Success message
-                    copyButton.textContent = 'Copied!';
-                    setTimeout(() => {
-                        copyButton.textContent = 'Copy to Clipboard';
-                    }, 2000);
-                }
-            } catch (err) {
-                console.error('Copy error:', err);
-                copyButton.textContent = 'Copy failed';
-                setTimeout(() => {
-                    copyButton.textContent = 'Copy to Clipboard';
-                }, 2000);
-            }
-        }
-
-        // Handle copy button
-        copyButton.addEventListener('click', copyQRToClipboard);
-
-        // Show/hide copy button
-        function updateCopyButtonVisibility(text) {
-            copyButton.classList.toggle('visible', text.trim() !== '');
-        }
-
-        // Listen for input changes
-        textInput.addEventListener('input', (e) => {
-            const text = e.target.value;
-            generateQRCode(text);
-            updateCopyButtonVisibility(text);
-        });
-
-        // Generate initial QR code if input is not empty
-        if (textInput.value) {
-            generateQRCode(textInput.value);
-            updateCopyButtonVisibility(textInput.value);
-        }
+        // Initialize theme
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('dark-mode');
+        const isDark = savedTheme !== null ? savedTheme === 'true' : prefersDark;
+        setTheme(isDark);
     </script>
 </body>
 </html>
